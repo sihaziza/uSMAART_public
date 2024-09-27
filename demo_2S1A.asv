@@ -1,11 +1,14 @@
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%% analyze time jitter of visual stimulation %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear all
 close all
 
 % set the data path
 mainPath='Y:\Hansol\Opioid';
 folder='WT_delta_Rcamp_BLA3215_Form_TMS_air\Form_TMS_airpuff_delta_3channel_autosave_001';
-
 path=fullfile(mainPath,folder);
 file=dir(fullfile(path,'*.mat'));
 
@@ -47,7 +50,7 @@ signals=runPhotoBleachingRemoval(signals,'lpCutOff',0.01,'samplingRate',fs,'filt
 % % if just doing dFF
 % signals=(signals-mean(signals))./mean(signals);
 
-sig=signals(:,3); 
+sig=signals(:,1); 
 ref=signals(:,2); % ref channel is either #2 or #3 for double or single sensor, resp.
 
 % unmxing step
@@ -60,7 +63,7 @@ plotPSD([sig ref opi],'samplingRate',fs,'BW',[1 100],'window',5);
 
 %% plot event-triggered rasters and average
 
-baselinePrePost=2;
+baselinePrePost=5;
 stimLength=5;
 
 [output_sig]=rasterERP(sig*100,ttl,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',true);
@@ -82,17 +85,19 @@ xlabel('Time (s)')
 % legend('red','','ref','','rcamp')
 legend('green','','ref','','opioid')
 
-%% Comparing pre-/ post- TMS treatment
+%%
 
 fig=figure('Name','Trigger average','DefaultAxesFontSize',16,'color','w');
 time=getTime(output_opi.arrayRaw(:,1),fs)-baselinePrePost;
-plotErrorBar1(output_opi.arrayRaw(:,1:20),'x_axis',time,'figHandle',fig,'color_area',geviColor('ace'),'color_line',geviColor('ace'),'error','sem');
+plotErrorBar1(output_sig.arrayRaw,'x_axis',time,'figHandle',fig,'color_area',geviColor('ace'),'color_line',geviColor('ace'),'error','c95');
 hold on
-plotErrorBar1(output_opi.arrayRaw(:,21:end),'x_axis',time,'figHandle',fig,'color_area',geviColor('vnm'),'color_line',geviColor('vnm'),'error','sem');
+plotErrorBar1(output_ref.arrayRaw,'x_axis',time,'figHandle',fig,'color_area',geviColor('vnm'),'color_line',geviColor('vnm'),'error','c95');
 hold on
-plot([0 0],[-0.2 0.2],'--k')
+plotErrorBar1(output_opi.arrayRaw(:,1:20),'x_axis',time,'figHandle',fig,'color_area',geviColor('pace'),'color_line',geviColor('pace'),'error','c95');
+hold on
+plot([0 0],[-0.5 1.5],'--k')
 hold off
 ylabel('dF/F (%)')
 xlabel('Time (s)')
 % legend('red','','ref','','rcamp')
-legend('pre','','post')
+legend('green','','ref','','opioid')

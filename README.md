@@ -28,4 +28,4 @@ demo_imaging
 
 If this code contributes to your work, please cite:
 
-Haziza S., et al. Imaging high-frequency voltage dynamics in multiple neuron classes of behaving mammals. Cell, 2025. 10.1016/j.cell.2025.06.028
+Haziza S., et al. Imaging high-frequency voltage dynamics in multiple neuron classes of behaving mammals. Cell, 2025. (https://doi.org/10.1016/j.cell.2025.06.028)

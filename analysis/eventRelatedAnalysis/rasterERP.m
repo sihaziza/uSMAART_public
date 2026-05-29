@@ -52,7 +52,7 @@ end
 imagesc(t,0:n,array')
 shading 'flat' %'interp'
 caxis(options.cRange)
-colormap('redblue')
+colormap('parula')
 colorbar('Location','southoutside');
 % c.Label.String = 'SD norm.';
 xlim([t(1) t(end)])

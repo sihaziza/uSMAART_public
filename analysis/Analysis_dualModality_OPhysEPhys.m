@@ -3,10 +3,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all
-close all
+% close all
 
 % pick mouse number 1 or 2
-mouseN=1;
+mouseN=2;
 
 % !!!change this line!!!
 % path=['yourPath to uSMAART .mat & LFP .rhd data']; % !!!change this line!!!
@@ -164,7 +164,7 @@ ylabel('zscore')
 
 %% Compute LFP coherence plots
 
-idxLFP=1; % pick between channel 1 and 2
+idxLFP=2; % pick between channel 1 and 2
 
 n=numel(M(:,1));
 idShu=randperm(n);shu=M(idShu,1); %generate the shuffle indices
@@ -231,7 +231,7 @@ id_off=find(f<15,1,'last');
 
 spinPW_Trace=rescale(mean(abs(sw(id_on:id_off,:))),0,1);
 %%
-[allSpindles,ttlSpindle]=findSpindles(LFP,'minPeakProm',40);
+[allSpindles,ttlSpindle]=findSpindles(LFP,'minPeakProm',30);
 
 baselinePrePost=0.5;
 stimLength=0.01;
@@ -241,9 +241,9 @@ output_swrPow=rasterERP(spinPW_Trace',ttlSpindle,fs,'baselinePrePost',baselinePr
 %% Parse spindle-related events
 
 plotBW=[0.5 100];
-output_LFP=rasterERP(bpFilter1D(LFP,plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',true);
+output_LFP=rasterERP(bpFilter1D(LFP,plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',false);
 
-output_umx=rasterERP(bpFilter1D(M(:,1),plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',true);%caxis([-0.006 0.006])
+output_umx=rasterERP(bpFilter1D(M(:,1),plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',false);%caxis([-0.006 0.006])
 output_ref=rasterERP(bpFilter1D(M(:,2),plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',false);%caxis([-0.005 0.005])
 output_shu=rasterERP(bpFilter1D(shu,plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',false);%caxis([-0.005 0.005])
 

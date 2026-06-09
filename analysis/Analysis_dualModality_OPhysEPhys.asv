@@ -122,7 +122,7 @@ figure; plot(T(1:2:end)./60,eData_corr(1:2:end,:))
 
 if mouseN==1
     % mouse 1: recording glitch: had to stop after ~10 min
-    rng=100*fs:size(signal,1);
+    rng=30*fs:size(signal,1);
 elseif mouseN==2
     % mouse 2: recording glitch at 600 sec
     rng=600*fs:size(signal,1);
@@ -134,7 +134,7 @@ tpo=signal(rng,:);
 lfp=eData_corr(rng,:);
 
 T=getTime(lfp,fs);
-figure; plot(T(1:2:end)./60,zscore([tpo(1:2:end,:) lfp(1:2:end,:)])+5.*[0:4])
+figure; plot(T(1:2:end)./60,zscore(tpo lfp(1:2:end,:))
 
 %% oPhys unmixing
 tpo=notchFilter(tpo,fs,297.6,'harmonics',2);
@@ -150,17 +150,46 @@ ref=tpo(:,3);
 
 [umx]=umxCONV(sig,ref,fs,'epoch',5);
 
-M=-100*[umx ref];
+%%
+
+% if mouseN==1
+%     % mouse 1
+%     rng=1:numel(lfp(:,1));
+% else
+%     % mouse 2
+%     rng=100*fs:1900*fs;
+% end
+
+M=[umx ref];M=-100*M;
 
 plotPSD(lfp,'samplingRate',fs,'BW',[0.5 50],'window',10);
 plotPSD(M,'samplingRate',fs,'BW',[0.5 50],'window',10);
 
 fig=figure('Name','LFP Coherence','DefaultAxesFontSize',14,'color','w');
-plot(getTime(M,fs),zscore(bpFilter1D([M(:,1) lfp(:,1)],[0.5 25],fs))+[0 5])
-xlabel('Time (s)')
+plot(getTime(M,fs),zscore(bpFilter1D([M(:,1) lfp(:,1)],[0.5 25],fs)))
+xlabel('Time (min)')
 ylabel('zscore')
 
 % exportgraphics(gcf,'timetraces.pdf', 'ContentType','vector');
+
+%% LFP - PV - Ref coherence
+
+fig=figure('Name','LFP Coherence','DefaultAxesFontSize',14,'color','w');
+coherencePair(lfp(:,1),umx(rng),fs,'window',5,'figHandle',fig);
+hold on
+coherencePair(lfp(:,1),ref(rng),fs,'window',5,'figHandle',fig);
+hold off
+xlim([0.1 50])
+title('Coherence LFP #1')
+
+fig=figure('Name','LFP Coherence','DefaultAxesFontSize',14,'color','w');
+coherencePair(lfp(:,2),umx(rng),fs,'window',5,'figHandle',fig);
+hold on
+coherencePair(lfp(:,2),ref(rng),fs,'window',5,'figHandle',fig);
+hold off
+xlim([0.1 50])
+title('Coherence LFP #2')
+
 
 %% Compute LFP coherence plots
 
@@ -230,15 +259,16 @@ id_on=find(f>10,1,'first');
 id_off=find(f<15,1,'last');
 
 spinPW_Trace=rescale(mean(abs(sw(id_on:id_off,:))),0,1);
-%%
-[allSpindles,ttlSpindle]=findSpindles(LFP,'minPeakProm',40);
 
-baselinePrePost=0.5;
+%%
+[allSpindles,ttlSpindle]=findSpindles(LFP,'minPeakProm',50);
+
+baselinePrePost=1;
 stimLength=0.01;
 
 output_swrPow=rasterERP(spinPW_Trace',ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',false);
 
-%% Parse spindle-related events
+%%
 
 plotBW=[0.5 100];
 output_LFP=rasterERP(bpFilter1D(LFP,plotBW,fs),ttlSpindle,fs,'baselinePrePost',baselinePrePost,'stimLength',stimLength,'figure',true);
